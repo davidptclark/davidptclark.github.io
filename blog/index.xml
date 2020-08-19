@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>{David Clark | Blog}</title>
+    <link>https://davidptclark.github.io/blog/</link>
+    <description>Recent content on {David Clark | Blog}</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 10 Jun 2017 22:11:55 +0100</lastBuildDate>
+    
+	<atom:link href="https://davidptclark.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Creating Vim macros for comment titles blocks in Stata and R</title>
+      <link>https://davidptclark.github.io/blog/vim_macro_comment/</link>
+      <pubDate>Sat, 10 Jun 2017 22:11:55 +0100</pubDate>
+      
+      <guid>https://davidptclark.github.io/blog/vim_macro_comment/</guid>
+      <description>So, after a short-lived love affair with Vim late last year, I decided to see if we could give it another go (in part due to the fact that I need to find methods of boosting productivity with the imminence of my PhD deadline). Luckily, it didn&amp;rsquo;t take me too long to remember the basic key binding to get around Vim and I already had a decent .vimrc set up, so what was the issue?</description>
+    </item>
+    
+  </channel>
+</rss>

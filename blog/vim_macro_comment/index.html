@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta content="keyword 1, keyword 2, keyword 3" name="keywords">
+<meta content="David Clark" name="author">
+<meta property="og:title" content="Creating Vim macros for comment titles blocks in Stata and R - {David Clark | Blog}">
+<meta property="og:url" content="https://davidptclark.github.io/blog/vim_macro_comment/">
+<meta property="og:description" content="Your description here">
+<meta property="og:type" content="website" />
+<title>Creating Vim macros for comment titles blocks in Stata and R | {David Clark | Blog}</title>
+<link rel="stylesheet" href="https://davidptclark.github.io/blog/css/style.css">
+<link rel="shortcut icon" href="https://davidptclark.github.io/blog/wave.ico">
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/github.min.css">
+
+
+<section class="section">
+  <div class="container">
+    <nav class="nav">
+      <div class="nav-left">
+        <a class="nav-item" href="https://davidptclark.github.io/blog"><h1 class="title is-4">{David Clark | Blog}</h1></a>
+      </div>
+      <div class="nav-right">
+        <nav class="nav-item level is-mobile">
+          
+          <a class="level-item" href="https://github.com/davidptclark" target="_blank">
+            <span class="icon">
+              <i class="fa fa-github"></i>
+            </span>
+          </a>
+          
+          <a class="level-item" href="https://twitter.com/davidptclark" target="_blank">
+            <span class="icon">
+              <i class="fa fa-twitter"></i>
+            </span>
+          </a>
+          
+          <a class="level-item" href="https://linkedin.com/in/davidptclark" target="_blank">
+            <span class="icon">
+              <i class="fa fa-linkedin-square"></i>
+            </span>
+          </a>
+          
+        </nav>
+      </div>
+    </nav>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h1 class="title">Creating Vim macros for comment titles blocks in Stata and R</h1>
+    <h2 class="subtitle is-5">June 10, 2017 by David Clark</h2>
+    
+      <div class="tags">
+    
+        <a class="button is-link" href="/blog/tags/stata">Stata</a>
+    
+        <a class="button is-link" href="/blog/tags/r">R</a>
+    
+        <a class="button is-link" href="/blog/tags/vim">Vim</a>
+    
+</div>
+
+    
+    <div class="content">
+      <p>So, after a short-lived love affair with Vim late last year, I decided to see if we could give it another go (in part due to the fact that I need to find methods of boosting productivity with the imminence of my PhD deadline). Luckily, it didn&rsquo;t take me too long to remember the basic key binding to get around Vim and I already had a decent .vimrc set up, so what was the issue?</p>
+
+<p>There we just some tasks that didn&rsquo;t seem to be getting more efficient with Vim.</p>
+
+<p>What where these tasks that were resistant to change? Here is a list of but a few:</p>
+
+<ul>
+<li><p>Comment blocks, namely those at the beginning of a script</p></li>
+
+<li><p>Converting part of text files into CSV (requires same action on numerous lines)</p></li>
+
+<li><p>Creating a bare syntax for a loop in some statistical language</p></li>
+</ul>
+
+<p>Essentially, these are monotonous tasks that require a lot of manual work; that is, unless we can automate the task. We could tackle this in two ways:</p>
+
+<ul>
+<li><p>We could use a <strong>macro</strong>, which essentially allows you to record a series of key presses and save them under a single character, for example &ldquo;a&rdquo; and the recall the actions of the macro later by typing &ldquo;@a&rdquo;.</p></li>
+
+<li><p>Create a function, which for a given argument, will invoke a number of procedures that the function has been specified to perform.</p></li>
+</ul>
+
+<p>While you can use a macro, given my days are spent using statistical languages, I opt for functions but both have the ability to achieve the same objective - increase efficiency. So, from the list above (and also because the title of this post specifies), I&rsquo;m going to quickly talk through how I used functions in Vim to create those comment blocks at the start of statistical scripts, usually with author names and other relevant information. Below are two examples of what I am aiming to create using as little work as possible, the first in Stata:</p>
+
+<pre><code class="language-Stata">**************************************************
+*   Some Paper
+*   
+*   David Clark
+*   
+*   Last updated: Some data
+**************************************************
+</code></pre>
+
+<p>and the second in R:</p>
+
+<pre><code class="language-R">##################################################
+#   Some Paper
+#   
+#   David Clark
+#   
+#   Last updated: Some data
+##################################################
+</code></pre>
+
+<p>You can see these are almost identical, differeing from the fact that the markup language Stata uses denotes the comment operator as an asterisk, where as R uses a hash character. So, before I write any function, I try to plan, using a flowchart or some other
+operational schematic, what I&rsquo;m trying to achieve and how I want to do it. So, let&rsquo;s try to break down the entire operation:</p>
+
+<ol>
+<li><p>Put a comment operator at the start of every targeted line and insert a few spaces before the text begins</p></li>
+
+<li><p>Add a line at the top of the script and add a row of comment operators, say 50</p></li>
+
+<li><p>Add a line at the bottom of the script and again, add a row of comment operators, say 50 to match the top</p></li>
+</ol>
+
+<p>That was the easy part, now we need to write the function itself. This is tricky, as it was for me, as I had no clue about the exact syntax of Vim functions but after taking a bit of time to read up on them, they are relatively intuitive. Here is the entire function for the command:</p>
+
+<pre><code class="language-vim">function! RCommentBox() range
+'&lt;,'&gt;normal I#   
+'&gt;put=repeat('#', 50)
+'&lt;put!=repeat('#', 50)
+endfunction
+
+xnoremap rcbox :call RCommentBox()&lt;CR&gt;
+
+function! SCommentBox() range
+'&lt;,'&gt;normal I*   
+'&gt;put=repeat('*', 50)
+'&lt;put!=repeat('*', 50)
+endfunction
+
+xnoremap scbox :call SCommentBox()&lt;CR&gt;
+</code></pre>
+
+<p>So, let us acknowledge where there is in fact two function. The simple reason is that there are two comment operators, so depending on whether we are creating a do-file or R script, will determine which one we use. <code>function! RCommentBox() range</code>
+is the first line at specifies firstly that we are defining a function, <code>RCommentBox()</code> is the name of the function and typically, we can list any arguments in the parentheses but in this case we don&rsquo;t have any, and finally, <code>range</code> specifies that we want to run this command on all the parts of the script which are visually selected.</p>
+
+<p>So, before explaining anymore, the idea would be that I would highlight any text I&rsquo;ve wrote that I want to be included in the comment box, such as my name, the name of the paper and maybe the date. Once I&rsquo;ve done that, the first line of the function specifies that for all the visually-selected lines <code>'&lt;,'&gt;</code>, invoke normal mode and then insert a comment operator and a few spaces. The second and third lines, specify that vim add a line at the top of the files and add 50 comment characters and do the same at the bottom of the selected area. Just to cap it off, we end the function by including <code>endfunction</code> at the end of the routine.</p>
+
+<p><code>xnoremap rcbox :call RCommentBox()&lt;CR&gt;</code> is the important line here as it specifies how we can call upon this function for a visually-selected block. <code>xnoremap</code> tells Vim that this is a visual mode only command and by typing <code>rcbox</code> it will call upon the function <code>RCommentBox()</code>. What I&rsquo;ve said exact represents the function for Stata but the comment operator is different. Below is a gif of the functions in action (apologies it is a bit tentative, performance anxiety and all that&hellip;).</p>
+
+<p><img src="/blog/vim_demo.gif" alt="" /></p>
+
+    </div>
+    
+        <div class="nav-left">
+    <a class="nav-item" href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fdavidptclark.github.io%2fblog%2fvim_macro_comment%2f" title="Share on Facebook" target="_blank"><span class="fa fa-facebook fa-2x" aria-hidden="true"></span></a>
+    <a class="nav-item" href="https://plus.google.com/share?url=https%3a%2f%2fdavidptclark.github.io%2fblog%2fvim_macro_comment%2f" title="Share on Google+" target="_blank"><span class="fa fa-google-plus fa-2x" aria-hidden="true"></span></a>
+    <a class="nav-item" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2fdavidptclark.github.io%2fblog%2fvim_macro_comment%2f" title="Share on LinkedIn" target="_blank"><span class="fa fa-linkedin fa-2x" aria-hidden="true"></span></a>
+    <a class="nav-item" href="https://twitter.com/home?status=Creating%20Vim%20macros%20for%20comment%20titles%20blocks%20in%20Stata%20and%20R - https%3a%2f%2fdavidptclark.github.io%2fblog%2fvim_macro_comment%2f" title="Tweet this" target="_blank"><span class="fa fa-twitter fa-2x"></span></a>
+    <a class="nav-item" href="http://www.reddit.com/submit?url=https%3a%2f%2fdavidptclark.github.io%2fblog%2fvim_macro_comment%2f&title=Creating%20Vim%20macros%20for%20comment%20titles%20blocks%20in%20Stata%20and%20R" title="Share on Reddit" target="_blank"><span class="fa fa-reddit-alien fa-2x" aria-hidden="true"></span></a>
+    
+    </div>
+    
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container has-text-centered">
+    <p></p>
+  </div>
+</section>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js" integrity="sha256-KbfTjB0WZ8vvXngdpJGY3Yp3xKk+tttbqClO11anCIU=" crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/languages/vim.min.js"></script>
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/languages/stata.min.js"></script>
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/languages/r.min.js"></script>
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/languages/go.min.js"></script>
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/languages/dockerfile.min.js"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'trackingcode', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+
+
